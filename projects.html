@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects - Portfolio</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: #000;
+      color: white;
+      cursor: none;
+    }
+
+    #backgroundCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+    }
+
+    #projectsContent {
+      position: relative;
+      z-index: 2;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 50px 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-gap: 20px;
+    }
+
+    h1 {
+      grid-column: 1 / -1;
+      font-size: 2.8em;
+      text-align: center;
+      text-shadow: 0 0 15px cyan;
+      margin-bottom: 40px;
+    }
+
+    .project {
+      background: rgba(0, 0, 0, 0.6);
+      border: 3px solid cyan;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 0 20px cyan;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .project:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 30px cyan;
+    }
+
+    .project h2 {
+      margin-top: 0;
+      font-size: 1.3em;
+      text-shadow: 0 0 8px cyan;
+    }
+
+    .project p {
+      font-size: 1em;
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    .tech {
+      font-style: italic;
+      color: #00ffff;
+      margin-bottom: 12px;
+      font-size: 0.95em;
+    }
+
+    .project a.button {
+      display: inline-block;
+      padding: 10px 20px;
+      font-size: 0.95em;
+      font-weight: bold;
+      background: cyan;
+      color: black;
+      text-decoration: none;
+      border-radius: 8px;
+      box-shadow: 0 0 15px cyan;
+      transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
+    }
+
+    .project a.button:hover {
+      background: #00ffff;
+      transform: scale(1.08);
+      box-shadow: 0 0 25px cyan;
+    }
+
+    #cursorEffect {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 40px;
+      height: 40px;
+      border: 3px solid cyan;
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s ease;
+      z-index: 3;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="backgroundCanvas"></canvas>
+  <div id="cursorEffect"></div>
+
+  <div id="projectsContent">
+    <h1>📂 Projects Done by Me</h1>
+
+    <div class="project">
+      <h2>Movie Recommendation System</h2>
+      <p>A content-based filtering system that suggests movies based on user preferences using NLP techniques and cosine similarity.</p>
+      <p class="tech">Tech Used: Python, Pandas, Scikit-Learn, NLP, Streamlit</p>
+      <a href="#" class="button">GitHub Repo</a>
+    </div>
+
+    <div class="project">
+      <h2>Face Detection System</h2>
+      <p>A face detection project using Haar cascades and DNN for real-time facial recognition.</p>
+      <p class="tech">Tech Used: OpenCV, Python, Flask</p>
+      <a href="#" class="button">GitHub Repo</a>
+    </div>
+
+    <div class="project">
+      <h2>Concentration Tracker</h2>
+      <p>Tracks student eye movement and drowsiness during online classes using facial landmark detection. Alerts on loss of focus.</p>
+      <p class="tech">Tech Used: Dlib, OpenCV, Python</p>
+      <a href="#" class="button">GitHub Repo</a>
+    </div>
+
+    <div class="project">
+      <h2>Traffic Detection using YOLOv8</h2>
+      <p>Real-time detection of vehicles and traffic violations using YOLOv8 object detection model.</p>
+      <p class="tech">Tech Used: YOLOv8, Ultralytics, Python, OpenCV</p>
+      <a href="#" class="button">GitHub Repo</a>
+    </div>
+
+    <div class="project">
+      <h2>Age & Gender Detection AI</h2>
+      <p>A deep learning-based model that estimates a person’s age and gender from webcam input in real-time.</p>
+      <p class="tech">Tech Used: CNN, OpenCV, Flask, Python</p>
+      <a href="#" class="button">GitHub Repo</a>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('backgroundCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const particles = [];
+    const particleCount = 150;
+
+    class Particle {
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 3 + 1;
+        this.speedX = (Math.random() - 0.5) * 1.5;
+        this.speedY = (Math.random() - 0.5) * 1.5;
+        this.color = 'cyan';
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x > canvas.width || this.x < 0 || this.y > canvas.height || this.y < 0) this.reset();
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+    }
+
+    function initParticles() {
+      for (let i = 0; i < particleCount; i++) particles.push(new Particle());
+    }
+
+    function connectParticles() {
+      for (let a = 0; a < particles.length; a++) {
+        for (let b = a + 1; b < particles.length; b++) {
+          const dx = particles[a].x - particles[b].x;
+          const dy = particles[a].y - particles[b].y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          if (distance < 100) {
+            ctx.strokeStyle = 'rgba(0,255,255,0.1)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(particles[a].x, particles[a].y);
+            ctx.lineTo(particles[b].x, particles[b].y);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => { p.update(); p.draw(); });
+      connectParticles();
+      requestAnimationFrame(animateParticles);
+    }
+
+    window.addEventListener('mousemove', e => {
+      document.getElementById('cursorEffect').style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+    });
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
+    initParticles();
+    animateParticles();
+  </script>
+</body>
+</html>
