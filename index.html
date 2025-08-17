@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sambit Mohapatra | Portfolio Entry</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: #000;
+      color: white;
+      opacity: 1;
+      transition: opacity 2s ease-in-out;
+    }
+
+    body.fade-out {
+      opacity: 0;
+    }
+
+    #backgroundCanvas, #introCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+    }
+
+    #introCanvas {
+      transition: opacity 3s ease-in-out;
+    }
+
+    #entryContent {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      z-index: 2;
+      border: 4px solid cyan;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 0 30px cyan;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      opacity: 0;
+      transition: opacity 3s ease-in-out;
+    }
+
+    #entryContent.show {
+      display: block;
+      opacity: 1;
+    }
+
+    #entryContent h1 {
+      font-size: 2.5em;
+      margin-bottom: 1em;
+      text-shadow: 0 0 10px cyan;
+    }
+
+    #entryContent button {
+      padding: 1em 2em;
+      font-size: 1.2em;
+      cursor: pointer;
+      background: cyan;
+      border: none;
+      border-radius: 10px;
+      color: black;
+      transition: transform 0.3s, background 0.3s;
+      box-shadow: 0 0 20px cyan;
+    }
+
+    #entryContent button:hover {
+      background: #00ffff;
+      transform: scale(1.1);
+      box-shadow: 0 0 30px cyan;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="backgroundCanvas"></canvas>
+  <canvas id="introCanvas"></canvas>
+  <div id="entryContent">
+    <h1>Hey, it's SAMBIT MOHAPATRA</h1>
+    <button onclick="enterPortfolio()">Enter the Portfolio</button>
+  </div>
+
+  <script>
+    const backgroundCanvas = document.getElementById('backgroundCanvas');
+    const backgroundCtx = backgroundCanvas.getContext('2d');
+    const introCanvas = document.getElementById('introCanvas');
+    const introCtx = introCanvas.getContext('2d');
+
+    backgroundCanvas.width = introCanvas.width = window.innerWidth;
+    backgroundCanvas.height = introCanvas.height = window.innerHeight;
+
+    const particles = [];
+    const particleCount = 150;
+    let mouse = { x: null, y: null };
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * backgroundCanvas.width;
+        this.y = Math.random() * backgroundCanvas.height;
+        this.size = Math.random() * 3 + 1;
+        this.speedX = (Math.random() - 0.5) * 1.5;
+        this.speedY = (Math.random() - 0.5) * 1.5;
+        this.color = 'cyan';
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x > backgroundCanvas.width || this.x < 0 || this.y > backgroundCanvas.height || this.y < 0) {
+          this.reset();
+        }
+      }
+      draw() {
+        backgroundCtx.beginPath();
+        backgroundCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        backgroundCtx.fillStyle = this.color;
+        backgroundCtx.fill();
+      }
+    }
+
+    function initParticles() {
+      for (let i = 0; i < particleCount; i++) {
+        particles.push(new Particle());
+      }
+    }
+
+    function connectParticles() {
+      for (let a = 0; a < particles.length; a++) {
+        for (let b = a + 1; b < particles.length; b++) {
+          const dx = particles[a].x - particles[b].x;
+          const dy = particles[a].y - particles[b].y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          if (distance < 100) {
+            backgroundCtx.strokeStyle = 'rgba(0,255,255,0.1)';
+            backgroundCtx.lineWidth = 1;
+            backgroundCtx.beginPath();
+            backgroundCtx.moveTo(particles[a].x, particles[a].y);
+            backgroundCtx.lineTo(particles[b].x, particles[b].y);
+            backgroundCtx.stroke();
+          }
+        }
+      }
+    }
+
+    function animateParticles() {
+      backgroundCtx.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
+      particles.forEach(p => { p.update(); p.draw(); });
+      connectParticles();
+      drawMouseEffect();
+      requestAnimationFrame(animateParticles);
+    }
+
+    function drawMouseEffect() {
+      if (mouse.x && mouse.y) {
+        backgroundCtx.beginPath();
+        backgroundCtx.arc(mouse.x, mouse.y, 50, 0, Math.PI * 2);
+        backgroundCtx.strokeStyle = 'rgba(0,255,255,0.3)';
+        backgroundCtx.lineWidth = 5;
+        backgroundCtx.stroke();
+      }
+    }
+
+    const textParticles = [];
+    function setupIntroText() {
+      const tempCanvas = document.createElement('canvas');
+      const tempCtx = tempCanvas.getContext('2d');
+      tempCanvas.width = introCanvas.width;
+      tempCanvas.height = introCanvas.height;
+
+      tempCtx.fillStyle = 'white';
+      tempCtx.font = 'bold 80px -apple-system, sans-serif';
+      tempCtx.textAlign = 'center';
+      tempCtx.fillText('SAMBIT MOHAPATRA', introCanvas.width / 2, introCanvas.height / 2);
+      const data = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+
+      for (let y = 0; y < data.height; y += 6) {
+        for (let x = 0; x < data.width; x += 6) {
+          const i = (y * data.width + x) * 4;
+          if (data.data[i + 3] > 128) {
+            textParticles.push({
+              x: Math.random() * introCanvas.width,
+              y: Math.random() * introCanvas.height,
+              destX: x,
+              destY: y,
+              vx: 0,
+              vy: 0
+            });
+          }
+        }
+      }
+    }
+
+    function animateIntro() {
+      introCtx.clearRect(0, 0, introCanvas.width, introCanvas.height);
+      textParticles.forEach(p => {
+        const dx = p.destX - p.x;
+        const dy = p.destY - p.y;
+        p.vx += dx * 0.01;
+        p.vy += dy * 0.01;
+        p.vx *= 0.9;
+        p.vy *= 0.9;
+        p.x += p.vx;
+        p.y += p.vy;
+        introCtx.beginPath();
+        introCtx.arc(p.x, p.y, 1.5, 0, Math.PI * 2);
+        introCtx.fillStyle = 'cyan';
+        introCtx.fill();
+      });
+      requestAnimationFrame(animateIntro);
+    }
+
+    window.addEventListener('mousemove', e => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+
+    window.addEventListener('resize', () => {
+      backgroundCanvas.width = introCanvas.width = window.innerWidth;
+      backgroundCanvas.height = introCanvas.height = window.innerHeight;
+    });
+
+    function enterPortfolio() {
+      document.body.classList.add('fade-out');
+      setTimeout(() => {
+        window.location.href = 'portfolio.html';
+      }, 2000);
+    }
+
+    initParticles();
+    setupIntroText();
+    animateParticles();
+    animateIntro();
+
+    setTimeout(() => {
+      document.getElementById('entryContent').classList.add('show');
+      introCanvas.style.opacity = 0;
+    }, 5000);
+  </script>
+</body>
+</html>
